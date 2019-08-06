@@ -1,0 +1,101 @@
+Laravel utiliza composer para manejar sus depencias
+
+composer create-project --prefer-dist laravel/laravel mi-proyecto// con esto creamos un proyecto de laravel
+
+php artisan serve //comando para iniciar el servidor de desarrollo de laravel
+php artisan list //lista todos los comandos de artisan
+php artisan make:controller -h // nos dice que hace el comando
+
+CONFIGURATION
+1.ir a la ruta donde esta el proyecto luego
+php artisan app:name <name_App> sirve para poner el nombre a nuestra aplicacion
+2.Configurar el timezone
+  ir a config/app.php
+  y en ese archivo en la linea 'timezon'=>'UTC' cambiamos utc por America/Guatemala
+3. Configurar el idioma
+   ir a config/app.php
+   y en ese archivo en la linea 'locale'=>'en' cambiamos en por es
+   luego en la carpeta resources/lang creamos una carpeta llamada es 
+   bajamos los archivos de lenguaje español de git https://github.com/caouecs/Laravel-lang
+   dentro de ese link de github en la carpeta src buscamos la carpeta es
+   copiamos los cuatro archivos y los pegamos en nuestra carpeta es de nuestro proyecto
+
+TEORIA HTTP
+Es el protocolo de comunicacion que permite las tranferencias de informacion en la WWW.
+http define una serie predefinida de metodos de peticion(verbos).
+
+GET
+Solicita una representacion dle recurso especificado.
+POST
+Envia los datos para que sean procesados por el recurso.
+PUT/PATCH
+Se utiliza para actualizar un recurso especificado
+DELETE
+Borra un recurso especificado
+
+RUTAS
+Para trabajar con las rutas nos vamos a 
+routes/web.php //aca van las rutas de nuestro proyecto web
+
+La sintaxis de una ruta en laravel es:
+
+Route::<verbo_http>('/<nombre_ruta>',function(){
+	return <cadena_o_view>;
+});
+
+La sintaxis de una ruta con parametros en laravel es:
+
+Route::<verbo_http>('/<nombre_parametro>'/{<parametro>},function($parametro){
+	return "<cadena_o_view>".$parametro;
+});
+
+Ejemplo
+
+Route::get('/name/{name}/lastname/{lastname}',function($name,$lastname){
+	return "Hola soy ".$name. " ".$lastname ;
+});
+
+para ingresar a esta ruta seria asi: http://localhost:8000/name/Eddy/lastname/Paz
+una variacion es
+Route::get('/name/{name}/lastname/{lastname?}',function($name,$lastname="apellido"){
+	return "Hola soy ".$name. " ".$lastname ;
+});
+Lo anterior lo que hace es setear el apellido si no viene y con el signo ? indicamos que es opcional
+
+
+CONTROLADORES
+Podemos crear controladores de forma manual o utilizando artisan
+Los controladores siempre deben tener un namespace para poder hacer referencia a ellos desde un router.
+Por otro lado siempre deben extender de la clase Controller usando la la sentencia extends y use
+
+Al llamar un metodos de un controlador desde un route se debe hacer de la siguiente manera
+Route::get('prueba','PruebaController@prueba');
+como primer argumento esta la ruta llamada prueba
+y como segundo el nombre del controlador seguido de una arroba y el metodo que se quiere de ese controlador
+
+Al llamar un metodo que requiere parametros de un controlador desde un route
+Route::get('prueba/{name}','PruebaController@prueba');
+
+TEORIA REST
+Estilo arquitectonico para proporcionar estandares para sistemas informaticos que estan en la web.
+
+RESTFULL
+Endpoint que implementa rest
+
+php artisan make:controller <name_controller> --resource//Crea controladores el --resource es opcional
+Nota este controlador se crea en la carpeta Auth
+
+Nota: las siguientes anotaciones de los controladores es acerca de como acceder a ellos si fueron creados con artisan.
+Para acceder a todos los metodos de un controlador desde un route se utiliza la siguiente sintaxis
+Route::resource('name_url','nameController');
+Si quisieramos acceder desde un navegador a una funcion del controlador seria
+http://ip/name_url/function
+Route::resource('name_url','nameController.function')
+ 
+
+VIEWS
+resource/views
+Se recomienda que por cada crud exista una carpeta dentro de views
+Si vamos a lanzar una vista desde un controlador se hace de la siguiente manera
+return view(name_carpeta.name_view);
+toca el video 12
