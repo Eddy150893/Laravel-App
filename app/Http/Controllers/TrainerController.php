@@ -3,6 +3,7 @@
 namespace LaraDex\Http\Controllers;
 
 use Illuminate\Http\Request;
+use LaraDex\Trainer;
 
 class TrainerController extends Controller
 {
@@ -13,7 +14,8 @@ class TrainerController extends Controller
      */
     public function index()
     {
-        return "Hola! desde el controlador resource";
+        $trainers=Trainer::all();//Consulta todos los datos de la tabla asociada a este modelo
+        return view('trainers.index',compact('trainers'));//y con compact le mandamos los datos
     }
 
     /**
@@ -34,7 +36,12 @@ class TrainerController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $trainer=new Trainer();
+        $trainer->name=$request->input('name');
+        $trainer->save();
+        return 'Saved';
+        //return $request->all();->metodo para obtener todos los datos que nos envia el usuario
+        //return $request->input('name');
     }
 
     /**

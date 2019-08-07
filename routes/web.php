@@ -25,4 +25,4 @@ Route::get('/name/{name}/lastname/{lastname?}',function($name,$lastname = 'apell
 
 Route::get('prueba/{name}','PruebaController@prueba');
 
-Route::resource('trainer','TrainerController');
+Route::resource('trainers','TrainerController');

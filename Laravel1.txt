@@ -98,4 +98,75 @@ resource/views
 Se recomienda que por cada crud exista una carpeta dentro de views
 Si vamos a lanzar una vista desde un controlador se hace de la siguiente manera
 return view(name_carpeta.name_view);
-toca el video 12
+
+Motor de plantillas BLADE
+@yield('nombre_elemento') // contenidos variables dentro de html
+@extends('nombre_o_ruta')//contenido que heredara la vista
+@section('cualquier_elemento','parametros del elemento')//envia parametro(string) a un elemento ya sea heredado o propio
+@section('nombre_elemento_declarado_con_yield')
+contenido html
+@endsection//nota esta seccion se diferencia del anterior que aca ira contenido mucho mas extenso y que el elemento
+fue declarado con yield
+@csrf//modulo de proteccion anti cross-site request forgery esto va inmediatamente despues de la etiqueta form
+
+REQUESTS
+https://laravel.com/docs/5.8/controllers#restful-localizing-resource-uris
+Si el controlador fue creado con artisan nos provee de una plantilla con todos los metodos y en la siguiente tabla
+se muestra la forma de enviarlos al controlador dependiendo de la accion que se desea hacer
+Verb  URI Action  Route Name
+GET /photos index photos.index
+GET /photos/create  create  photos.create
+POST  /photos store photos.store
+GET /photos/{photo} show  photos.show
+GET /photos/{photo}/edit  edit  photos.edit
+PUT/PATCH /photos/{photo} update  photos.update
+DELETE  /photos/{photo} destroy photos.destroy
+
+Para una mejor visualizacion ir a la url mostrad en el inicio
+
+ELOQUENT ORM
+Object Relational Mapping
+Es una tecnica de programacion para convertir datos utilizando un lenguaje de programacion orientado
+a objetos y la utilizacion de una base de datos relacional como motor de persistencia.
+
+Eloquent proporciona una implementacion de ActiveRecord bella y sencilla para trabajar con nuestra base de datos.
+
+Cada tabla tiene un "Modelo" correspondiente que se utiliza para interactuar con esa tabla.
+
+Los modelos le permiten consultar datos en sus tablas, asi como insertar nuevos registros en la misma. 
+
+Modelo: Es la representacion de la informacion. La tarea principal es gestionar la informacion de la bbdd.
+
+MODELOS
+php artisan make:model Trainer --migration
+Al utilizar la etiqueta --migration lo que hace basicamente es crear tablas sin utilizar directamente sql
+en la carpeta database/migrations aparecen los archivos de migraciones y en especifico aparece uno 
+donde podemos crear nuestra tabla es facil identificarlo por que el nombre que tiene contiene el nombre del modelo
+Nota: dichas migraciones(sentencias sql) se van a ejecutar en la bbdd que tengamos configurada en el archivo
+.env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=laradex_development
+DB_USERNAME=root
+DB_PASSWORD=root
+
+por ultimo ya que creamos los archivos de migraciones pero aun no hemos creado la bbdd 
+entonces creamos la base de datos que tiene que tener el mismo nombre que le pusimos en el .env 
+y luego colocamos 
+php artisan migrate// este comando hara las migraciones a la bbdd
+
+
+OPCIONAL(
+Nota: puede dar error ya que laravel agrego el soporte para agregar emogis en la bbdd
+entonces si utilizamos una version vieja de mysql debemos ir a la documentacion oficial para ver como se soluciona
+en appserviceprovider.php
+ponemos 
+use Illuminate\Support\Facades\Schema;
+
+y en el boot function
+Schema::defaultStringLength(191);
+)
+
+
+Me quede en el video 17
