@@ -108,7 +108,7 @@ contenido html
 @endsection//nota esta seccion se diferencia del anterior que aca ira contenido mucho mas extenso y que el elemento
 fue declarado con yield
 @csrf//modulo de proteccion anti cross-site request forgery esto va inmediatamente despues de la etiqueta form
-
+NOTA: para que el formulario sea capaz de enviar distintos tipos de datos o incluso archivos se le debe colocar el siguiente atrivuto a la etiqueta form: enctype="multipart/form-data"
 REQUESTS
 https://laravel.com/docs/5.8/controllers#restful-localizing-resource-uris
 Si el controlador fue creado con artisan nos provee de una plantilla con todos los metodos y en la siguiente tabla
@@ -168,5 +168,19 @@ y en el boot function
 Schema::defaultStringLength(191);
 )
 
+AGREGAR CAMPO A TABLA EXISTENTE
+Para agregar un campo a una tabla que ya existia es con 
+php artisan make:migration add_avatar_to_trainer_table --table=trainers//esto lo que hace es crear un archivo
+en database/migration/XXXXadd_avatar_to_trainer_table
+que hara referencia a la tabla que vamos a modificar y es ahi donde colocamos el nuevo campo
 
-Me quede en el video 17
+$table->string('name_campo');
+
+
+Para subir archivos al servidor en el metodo del controlador se debe colocar lo siguiente
+if($request->hasFile('avatar')){//si existe un archivo con el nombre de input "avatar" entonces
+  $file=$request->file('avatar');//se guarda en una variable el request indicandole que es un archivo
+  $name=time().$file->getClientOriginalName();//se le pone un nombre unico para ello utilizamos el time
+  $file->move(public_path())//movemos el archivo a 
+  return $name;
+}
