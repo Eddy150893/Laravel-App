@@ -1,3 +1,13 @@
+Para usar este proyecto en otra compu primero verificar si no tiene el error
+de los emojis si no primero agregar las lineas correspondientes al appserviceprovider
+descrito abajo luego crear una base de datos laradex_development
+luego en el archivo .env poner lo correspondiente a la bbdd
+y por ultimo
+php artisan migrate
+si al ingresar a la url salta un error de keys entonces
+php artisan key:generate
+
+
 Laravel utiliza composer para manejar sus depencias
 
 composer create-project --prefer-dist laravel/laravel mi-proyecto// con esto creamos un proyecto de laravel
@@ -108,7 +118,11 @@ contenido html
 @endsection//nota esta seccion se diferencia del anterior que aca ira contenido mucho mas extenso y que el elemento
 fue declarado con yield
 @csrf//modulo de proteccion anti cross-site request forgery esto va inmediatamente despues de la etiqueta form
-NOTA: para que el formulario sea capaz de enviar distintos tipos de datos o incluso archivos se le debe colocar el siguiente atrivuto a la etiqueta form: enctype="multipart/form-data"
+NOTA 1: para que el formulario sea capaz de enviar distintos tipos de datos o incluso archivos se le debe colocar el siguiente atrivuto a la etiqueta form: enctype="multipart/form-data"
+NOTA 2: Los formulario de html no soportan la directiva put/patch por ello al igual que @csrf la directiva
+@method('PUT') va despues de la etiqueta form
+esto para hacer una peticion de actualizacion y el action del form no solo sera la ruta trainers que esta definida en el route si no tambien el slug
+/trainers/{{$trainer->slug}}
 REQUESTS
 https://laravel.com/docs/5.8/controllers#restful-localizing-resource-uris
 Si el controlador fue creado con artisan nos provee de una plantilla con todos los metodos y en la siguiente tabla
@@ -168,6 +182,9 @@ y en el boot function
 Schema::defaultStringLength(191);
 )
 
+NOTA: En los modelos debemos declarar una varible protegida llamada fillable en la cual la igualaremos a un vector con los campos que se pueden editar, 
+protected $fillable=['name','avatar','description'] ;
+
 AGREGAR CAMPO A TABLA EXISTENTE
 Para agregar un campo a una tabla que ya existia es con 
 php artisan make:migration add_avatar_to_trainer_table --table=trainers//esto lo que hace es crear un archivo
@@ -184,3 +201,54 @@ if($request->hasFile('avatar')){//si existe un archivo con el nombre de input "a
   $file->move(public_path())//movemos el archivo a 
   return $name;
 }
+
+AGREGAR CAMPO A TABLA TRAINER
+php artisan make:migration add_description_to_trainer_table --table=trainers
+luego nos dirijimos a database/migration/XXXXadd_description_to_trainer_table 
+$table->string('name_campo');//en la funcion up existe una parte llamada Schema lo agregamos dentro
+php artisan migrate
+
+Implicit Binding
+Resolver de manera automatica los modelos definidos en eloquent
+en la funcion show de nuestros controladores en lugar de tener como parametro el $id podemos tener de parametro el modelo y la variable
+Trainer $trainer
+asi por ejemplo en el siguiente fragmento de codigo 
+ public function show(Trainer $trainer)
+{
+   view('trainers.show',compact('trainer'));
+}
+NOTA: en el ejemplo anterior hay que mandarle el id desde las vista
+
+SLUG
+Basicamente el objetivo de slug es: NO MOSTRAR EL CONTENIDO DE VARIABLES PASADOS POR LA URL
+
+PARA AGREGAR UN SLUG
+Primero agregamos una migracion a una tabla
+php artisan make:migration add_slug_to_trainers --table=trainers
+Segundo despues de ejecutar artisan migration se crea un archivo en database/migrations/xxxxadd_slug_to_trainers
+en la funcion up dentro del schema colocamos
+$table->string('slug')->unique();
+Tercero se ejecuta
+php artisan migrate
+
+NOTA: En todas las migraciones en los archivos de migraciones existe una funcion down y dentro del schema tenemos que colocar que debe realizar la migracion si hacemos rollback de la misma 
+por ejemplo en la migracion anterior en la funcion down dentro de schema colocamos
+$table->dropColumn('slug');
+para que elimine la columna si hacemos rollback
+
+luego de ello el slug pasaria a funcionar como si fuese el id, por tanto en todos los href donde pasemos un id ahora pasaremos un slug y en todos los controllers donde recibamos un id ahora ya no recibiremos un id si no mas bien un slug
+
+Ahora uniendo ambos tanto slug como implicit binding podemos solo colocar unas lineas en el modelo para que funcionen ambos
+
+   /**
+   * Get the route key for the model.
+   *
+   * @return string
+   */
+  public function getRouteKeyName()
+  {
+      return 'slug';
+  }
+
+Con esto lo que hacemos es pasar el slug en la vista y en el controlador utilizamos el splicit binding 
+es decir pasar como parametro un objeto de tipo entrenador, esto lo podemos hacer si en el modelo del trainer colocamos las lineas arriba mostradas

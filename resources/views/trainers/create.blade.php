@@ -8,6 +8,10 @@
 	<input type="text" name="name" class="form-control">
 </div>
 <div class="form-group">
+  <label for="description">descripcion</label>
+  <textarea class="form-control rounded-0" name="description" rows="3"></textarea>
+</div>
+<div class="form-group">
 	<label for="avatar">Avatar:</label>
 	<input type="file" name="avatar" class="form-control-file">
 </div>
