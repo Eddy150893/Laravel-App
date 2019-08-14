@@ -37,6 +37,11 @@ class TrainerController extends Controller
      */
     public function store(Request $request)
     {
+        $validatedData=$request->validate([
+            'name'=>'required|max:10',
+            'avatar'=>'required|image',
+            'description'=>'required'
+        ]);
          if($request->hasFile('avatar')){
             $file=$request->file('avatar');
             $name=time().$file->getClientOriginalName();
@@ -95,7 +100,7 @@ class TrainerController extends Controller
      */
     public function update(Request $request, Trainer $trainer)
     {
-        $trainer->fill($request->except('avatar'));//actualiza todos los datos excepto el avatar, ya que se trata de otra manera
+        $trainer->fill($request->except(['avatar','slug']));//actualiza todos los datos excepto el avatar, ya que se trata de otra manera
         if($request->hasFile('avatar')){
             $file=$request->file('avatar');
             $name=time().$file->getClientOriginalName();

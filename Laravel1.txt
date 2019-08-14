@@ -252,3 +252,141 @@ Ahora uniendo ambos tanto slug como implicit binding podemos solo colocar unas l
 
 Con esto lo que hacemos es pasar el slug en la vista y en el controlador utilizamos el splicit binding 
 es decir pasar como parametro un objeto de tipo entrenador, esto lo podemos hacer si en el modelo del trainer colocamos las lineas arriba mostradas
+
+composer install//equivalente a npm install
+
+LARAVEL COLLECTIVE
+Podemos generar formularios y etiquetas html
+
+Para instalar laravel collective
+composer require "laravelcollective/html":"^5.4.0"
+Luego tenemos que agregar laravel collective como proveedor en la ruta
+config/app.php
+
+en el array 'providers' => [],
+la siguiente linea
+Collective\Html\HtmlServiceProvider::class,
+
+en el arrray 'aliases' =>[],
+las siguientes lineas
+
+'Form'=>Collective\html\FormFacade::class,
+'Html'=>Collective\Html\HtmlFacade::class,
+Luego la sintaxis para crear un FORMULARIO ES LA SOGUIENTE
+Abrimos un formulario que recibe como parametros un array con la ruta que procesara el form,el metodo y si aceptara archivos
+{!!Form::open(['route'=>'trainers.store','method'=>'POST','files'=>true])!!}
+  <div class="form-group">
+    {!!Form::label('name','Nombre')!!}
+    {!!Form::text('name',null,['class'=>'form-control'])!!}
+  </div>
+  <div class="form-group">
+    {!!Form::label('description','Descripcion')!!}
+    {!!Form::textarea('description',null,['class'=>'form-control rounded-0'])!!}
+  </div>
+  <div class="form-group">
+    {!!Form::label('avatar','Avatar')!!}
+    {!!Form::file('avatar')!!}
+  </div>
+  {!!Form::submit('Guardar',['class'=>'btn btn-primary'])!!}
+{!!Form::close()!!}
+
+utilizando los formularios de laravel collective ya no tenemos que utilizar las directivas tales como
+@csrf
+el equivalente al formulario anterior es el siguiente: recordando que este es un formulario de creacion
+<form class="form-group" method="POST" action="/trainers" enctype="multipart/form-data" files="true">
+  @csrf
+<div class="form-group">
+  <label for="nombre">Nombre:</label>
+  <input type="text" name="name" class="form-control">
+</div>
+<div class="form-group">
+  <label for="description">descripcion</label>
+  <textarea class="form-control rounded-0" name="description" rows="3"></textarea>
+</div>
+<div class="form-group">
+  <label for="avatar">Avatar:</label>
+  <input type="file" name="avatar" class="form-control-file">
+</div>
+<button type="submit" class="btn btn-primary">Guardar</button>
+</form>
+
+Para crear un formulario de edicion la cuestion es diferente pues hace un binding
+el siguiente es un formulario de edicion solo la etiqueta form cambia para hacer el bindin luego seria cuestion de copiar y pegar todos los campos del formulario create y el se encargaria de llenar los mismos automaticamente es decir no es necesario indicarselo con el atributo value
+NOTA: para que llene los campos automaticamente los campos deben estar nombrados con los mismos nombres que tienen en la bbdd es decir si en la bbdd tenemos un name el campo se debe llamar name
+{!! Form::model($trainer,['route'=>['trainers.update',$trainer],'method'=>'PUT','files'=>true])!!}
+<div class="form-group">
+    {!!Form::label('name','Nombre')!!}
+    {!!Form::text('name',null,['class'=>'form-control'])!!}
+  </div>
+  <div class="form-group">
+    {!!Form::label('description','Descripcion')!!}
+    {!!Form::textarea('description',null,['class'=>'form-control rounded-0'])!!}
+  </div>
+  <div class="form-group">
+    {!!Form::label('avatar','Avatar')!!}
+    {!!Form::file('avatar')!!}
+  </div>
+  {!!Form::submit('Actualizar',['class'=>'btn btn-primary'])!!}
+{!!Form::close()!!}
+
+El siguiente seria el equivalente al formulario anterior
+<form class="form-group" method="POST" action="/trainers/{{$trainer->slug}}" enctype="multipart/form-data" files="true">
+  @method('PUT')
+  @csrf
+<div class="form-group">
+  <label for="nombre">Nombre:</label>
+  <input type="text" name="name" class="form-control" value="{{$trainer->name}}">
+</div>
+<div class="form-group">
+  <label for="description">descripcion</label>
+  <textarea class="form-control rounded-0" name="description" rows="3">{{$trainer->description}}</textarea>
+</div>
+<div class="form-group">
+  <label for="avatar">Avatar:</label>
+  <input type="file" name="avatar" class="form-control-file">
+</div>
+<button type="submit" class="btn btn-primary">Actualizar</button>
+</form>
+
+COMPONENTES EN LARAVEL COLLECTIVE
+Con laravel podemos crear componentes lo que debemos hacer es crear un componente 
+en un archivo.blade.php
+luego donde queramos ese componente
+solo utilizamos la instruccion @include('ruta.componente')
+
+Ejemplo
+
+{!!Form::open(['route'=>'trainers.store','method'=>'POST','files'=>true])!!}
+  @include('trainers.form')
+  {!!Form::submit('Actualizar',['class'=>'btn btn-primary'])!!}
+{!!Form::close()!!}
+
+Donde traines.form contiene el componente
+
+Validaciones
+Las validaciones se hacen en el controlador con el metodo validate
+ese metodo lo igualamos a una variable y dicho metodo tiene como parametro
+un array con los campos a validar y las reglas que se le aplicaran
+dicho metodo debe ir en las funciones store, update y antes de toda la logica 
+tanto de store como update
+
+public function store(Request $request)
+    {
+        $validatedData=$request->validate([
+            'name'=>'required|max:10',
+            'avatar'=>'required|image',
+            'description'=>'required'
+        ]);
+         if($request->hasFile('avatar')){
+            $file=$request->file('avatar');
+            $name=time().$file->getClientOriginalName();
+            $file->move(public_path().'/images/',$name);
+        }
+        $trainer=new Trainer();
+        $trainer->name=$request->input('name');
+        $trainer->description=$request->input('description');
+        $trainer->avatar=$name;
+        $trainer->slug = time().Str_slug($trainer->name);//para que guarde automaticamente el slug
+        $trainer->save();
+        return 'Saved';
+    }
