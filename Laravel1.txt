@@ -390,3 +390,57 @@ public function store(Request $request)
         $trainer->save();
         return 'Saved';
     }
+
+En Laravel existe la variable global errors si la validacion no se cumple y esta puede ser utilizada en las vistas
+de la siguiente manera
+@if($errors->any())
+<div class="alert alert-danger">
+  @foreach($errors->all() as $error)
+  <li>{{$error}}</li>
+  @endforeach
+</div>
+@endif
+
+La validacion anterior se llevo acabo en el controlador 
+pero para tener mejor estructurado nuestro codigo es mejor utilizar form request
+php artisan make:request StoreTrainerRequest//esto crea un request
+y el archivo se crea en 
+app/http/requests/StoreTrainerRequest.php
+vamos a encontrrar dos funciones autorize y rules
+en la funcion rules es donde tenemos que hacer las validaciones
+como aun no estamos viendo autorizacion 
+devolvemos "true" en autorizacion 
+y en el metodo rules ponemos las reglas
+En el controlador donde queremos usar las validaciones por medio del archivo request lo incluimos en este caso debemos incluirlo en TrainerController
+use LaraDex\Http\Requests\StoreTrainerRequest;
+ahora en el metodo store en lugar de usar como parametro un request normal utilizamos el request que acabamos de crear
+
+public function store(StoreTrainerRequest $request){}
+
+al hacer esto se comporta exactamente de la manera anterior si se cumple la validacion sigue con el flujo de lo contrario solo regresa a la view
+
+Lo unico que hacemos es separa la validacion del controller por medio del request
+
+ELIMINAR UN REGISTRO
+se envia el slug(que ahora es nuestro id) al metodo destroy
+el metodo destroy recibe como paramtro el modelo al que hace referencia y no el slug como seria lo logico esto por implicit binding
+
+Responses
+Existen diferentes tipos de responses es decir lo que retorna las funciones del controlador
+php artisan route:list// muestra todas las rutas definidas
+un tipo de redireccionamiento es 
+return redirect()->route('trainers.show',[$trainer]);
+el route recibe dos parametros la ruta y si hay que mandarle parametros en este caso un objeto trainer
+
+Session Data
+return redirect()->route('trainers.show',[$trainer])->with('status','Entranador actualizado correctamente');
+Es lo mismo que lo anterior una respuesta con redireccionamientopero con el metodo with podemos enviar mas informacion como por ejemplo mensajes de completacion
+pero a esta variable se accede en la vista como variable de session pues es eso lo que es
+se accesederia a ella de esta manera
+session('status')
+
+AUTENTICACION
+php artisan// muestra todos los comandos que se pueden usar con artisan
+
+php artisan make:auth//implementa un login tanto la vista como toda la logica detras de ella para hacer un login
+NOTA: si ya tenemos un app.blade.php esta instruccion modificara por completo este documento

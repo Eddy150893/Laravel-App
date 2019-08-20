@@ -4,6 +4,8 @@ namespace LaraDex\Http\Controllers;
 
 use Illuminate\Http\Request;
 use LaraDex\Trainer;
+use LaraDex\Http\Requests\StoreTrainerRequest;
+
 
 class TrainerController extends Controller
 {
@@ -35,13 +37,14 @@ class TrainerController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreTrainerRequest $request)
     {
-        $validatedData=$request->validate([
+        //Ahora el validation se manejara por request
+        /*$validatedData=$request->validate([
             'name'=>'required|max:10',
             'avatar'=>'required|image',
             'description'=>'required'
-        ]);
+        ]);*/
          if($request->hasFile('avatar')){
             $file=$request->file('avatar');
             $name=time().$file->getClientOriginalName();
@@ -53,7 +56,7 @@ class TrainerController extends Controller
         $trainer->avatar=$name;
         $trainer->slug = time().Str_slug($trainer->name);//para que guarde automaticamente el slug
         $trainer->save();
-        return 'Saved';
+        return redirect()->route('trainers.index')->with('status','Entranador creado correctamente');
        
         //return $request->all();//->metodo para obtener todos los datos que nos envia el usuario
         //return $request->input('name');
@@ -74,7 +77,7 @@ class TrainerController extends Controller
         $trainer=Trainer::where('slug','=',$slug)->firstOrFail();
         */
         /*3. Pasando el slug o id pero utilizando implicit binding entonces el parametro es un objeto del modelo
-            tener en cuenta que en este ejemplo se pasa el slug en la vista y por ello modificamos el modelo para
+            tener en cuenta que en este ejemplo se pasa el slug en la vista y por ello modificamos el modelo(ver modelo) para
             utilizar tambien splicit binding
         */
         return view('trainers.show',compact('trainer'));
@@ -108,7 +111,7 @@ class TrainerController extends Controller
             $file->move(public_path().'/images/',$name);
         }
         $trainer->save();
-        return "actualizado";
+        return redirect()->route('trainers.show',[$trainer])->with('status','Entranador actualizado correctamente');
     }
 
     /**
@@ -117,8 +120,11 @@ class TrainerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(/*$id como estamos utilizando implicit binding y enviando un slug por ello cambiamos el parametro a*/ Trainer $trainer)
     {
-        //
+        $file_path=public_path().'/images/'.$trainer->avatar;
+        \File::delete($file_path);
+        $trainer->delete();
+        return redirect()->route('trainers.index')->with('status','Entranador eliminado correctamente');
     }
 }
