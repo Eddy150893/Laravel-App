@@ -517,5 +517,35 @@ El archivo
 database/seeds/DataBaseSeeder.php
 este archivo se encarga de arrancar nuestros seeders con su metodo call 
 
-me quede en el video 35 cuando ejecuta la migracio  con seeds
+luego para ejecutar los seeders y las migracions
+composer dump-autoload//regenera los archivos para que no haya errores
+php artisan migrate:refresh --seed//siembra los datos en la base de datos
 
+LOGICA DE AUTORIZACION(En el modelo User)
+Primero en el modelo de usuario creamos una funcion que nos devuelva si un usuario 
+tiene un rol hasRole($role)
+como nuestra relacion es de muchos a muchos entonces un usuario puede tener varios roles
+por ende tambien una funcion hasAnyRole($roles) que devolvera el rol o los roles que el usuario tiene
+y hasAnyRole utiliza a hasRole para validar si el usuario efectivamente tiene un rol asignado
+por ultimo creamos una funcion que valida la autorizacion de roles authorizeRoles($roles)
+que a su vez manda a llamar a hasAnyRole($roles)
+
+autorizeRoles($roles)-|
+                      |->hasAnyRole($roles)-|
+                                            |->hasRole($role)
+Si el perfil no esta autorizado, lanzara un abort que nosotros programamos o bien retornar una vista que nosotros queramos
+vamos a filtrar que solo los administradores puedan ver los entrenadores
+esto dentro del TrainerController y en cada funcion que retorna una vista podemos poner la siguiente
+linea
+$request->user()->authorizeRoles('admin');  //esto hace una peticion para saber que usuario es
+y el autorizeRoles es la funcion que creamos con anterioridad en la cual si el perfil no esta autorizado para esa vista entonces lanzara un abort o una vista que nosotros programemos y le enviamos como parametro solo el perfil o perfiles que tienen permisos en esa vista 
+
+REDIRECCION LOGUEO INICIAL
+Si queremos que despues de loguearnos nos redireccione por default a una vista lo hacemos en
+app/Http/Auth/LoginController
+en la variable $redirectTo='/vista'
+En esa misma carpeta Autho se hace la redireccion de diferentes casos de uso
+
+VUE
+Framework de javascript
+en el root de nuestra aplicacion hay un package.json

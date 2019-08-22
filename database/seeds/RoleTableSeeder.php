@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use LaraDex\Role;
+
 class RoleTableSeeder extends Seeder
 {
     /**

@@ -14,8 +14,9 @@ class TrainerController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $request->user()->authorizeRoles(['user','admin']);   
         $trainers=Trainer::all();//Consulta todos los datos de la tabla asociada a este modelo
         return view('trainers.index',compact('trainers'));//y con compact le mandamos los datos
         
@@ -56,7 +57,7 @@ class TrainerController extends Controller
         $trainer->avatar=$name;
         $trainer->slug = time().Str_slug($trainer->name);//para que guarde automaticamente el slug
         $trainer->save();
-        return redirect()->route('trainers.index')->with('status','Entranador creado correctamente');
+        return redirect()->route('trainers.index')->with('status','Entrenador creado correctamente');
        
         //return $request->all();//->metodo para obtener todos los datos que nos envia el usuario
         //return $request->input('name');
