@@ -443,4 +443,79 @@ AUTENTICACION
 php artisan// muestra todos los comandos que se pueden usar con artisan
 
 php artisan make:auth//implementa un login tanto la vista como toda la logica detras de ella para hacer un login
-NOTA: si ya tenemos un app.blade.php esta instruccion modificara por completo este documento
+NOTA: si ya tenemos un app.blade.php esta instruccion modificara por completo este documento, preguntara si queremos modificar el app.blade.php y le decimos que si
+
+
+ROLES DE USUARIO
+crearemos migraciones para que un usuario pueda tener una o mas roles y como un rol puede ser asignado a muchos usuarios entonces tendremos una relacion de muchos a muchos por lo cual crearemos un tabla pivote.
+
+php artisan make:model Role -m //crea un modelo al mismo que crea una migracion para este modelo y este estara en 
+database/migration/XXX_create_roles_table.php
+en dicho archivo especificamos los campos
+que tendra nuestra tabla roles dentro de la funcion up dentro de Schema
+
+php artisan make:migration create_role_user_table//crea una migracion la cual sera la tabla pivote(mucho a muchos) de rol y usuario dicha migracion se encontrara en 
+database/migration/XXX_create_role_user_table.php
+en dicha migracion(tabla en la bbdd) tendra tanto el id del rol como el id del usuario dentro de la funcion up dentro de Schema
+
+por ultimo ejecutamos: php artisan migrate para que cree las tablas en la bbdd
+
+Por ultimo tenemos que relacionar nuestros modelos ya que usuario se relaciona de muchos a muchos con rol(esto por que asi lo definimos)
+para hacer esto en ambos modelos tenemos que declarar una funcion publica donde del usuario obtengamos todos los roles que tiene y del rol obtengamos todos los usuarios que tienen ese rol
+
+BELONGSTOMANY
+
+En el modelo User 
+public function roles(){
+        return $this->belongsToMany('LaraDex\Role')
+}
+
+En el modelo Role
+public function user(){
+      return $this->belongsToMany('LaraDex\User');
+}
+
+SEEDERS(semillas)
+Los sideers lo que hacen es llenar con datos base(quemados) dentro de la bbdd es decir si queremos que una tabla al montar el sistema ya tenga datos por defecto(esto se utiliza mas en el registro de usuarios)
+
+
+php artisan make:seeder RoleTableSeeder//crea un seeder para los roles,estos se almacenan en 
+database/seeds/RoleTableSeeder
+php artisan make:seeder UserTableSeeder//crea un seeder para los user,estos se almacenan en 
+database/seeds/UserTableSeeder
+
+
+paso 1:Dentro del RoleTableSeeder
+primer incluimos el modelo con su namespace
+use LaraDex\Role
+paso 2:Dentro de la funcion run()
+crearemos un objeto del modelo y lo llenamos con los datos que necesita ese modelo
+
+
+paso 1:Dentro del UserTableSeeder incluimos tanto el modelo de usuarios como el de roles es decir Role y User con los namespace
+use LaraDex\Role
+use LaraDex\User;
+Hacemos un Query a la base de datos que nos traiga el rol que cumpla con el campo que le pasemos por ejemplo si queremos el rol de user o el de Admin
+Ejemplo: mandamos a consultar a la bbdd el primer rol que en su campo name tenga el valor user
+$role_user=Role::where('name','user')->firts();
+luego creamos un objeto del modelo User y lo llenamos con los datos que necesita
+Nota: para el password larabel utiliza bcrypt
+Ejemplo
+$user->password=bcrypt('query');//donde query seria la contraseña 
+por ultimo le asignamos el rol al usuario y como arriba cuando creamos una funcion que devolvia el belongsToMany en el modelo de User esto lo que hace es resolver los modelos de muchos a muchos y nos provee de metodos para atachar un elemento a otro elemento cuando la dependencia es de muchos a muchos como en este caso usuario a rol
+
+$role_user=Role::where('name','user')->first();
+        $role_admin=Role::where('name','Admin')->first();
+        $user=new User();
+        $user->name="User";
+        $user->email="user@email.com";
+        $user->password=bcrypt('query');
+        $user->save();
+        $user->roles()->attach($role_user);
+
+El archivo
+database/seeds/DataBaseSeeder.php
+este archivo se encarga de arrancar nuestros seeders con su metodo call 
+
+me quede en el video 35 cuando ejecuta la migracio  con seeds
+
