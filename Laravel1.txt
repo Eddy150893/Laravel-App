@@ -92,8 +92,8 @@ Estilo arquitectonico para proporcionar estandares para sistemas informaticos qu
 RESTFULL
 Endpoint que implementa rest
 
-php artisan make:controller <name_controller> --resource//Crea controladores el --resource es opcional
-Nota este controlador se crea en la carpeta Auth
+php artisan make:controller <name_controller> --resource//Crea controladores el --resource es opcional y sirve para que cuando se cree el controlador ya traiga los metodos comunes  a todos los controladores
+Nota este controlador se crea en la carpeta Controllers
 
 Nota: las siguientes anotaciones de los controladores es acerca de como acceder a ellos si fueron creados con artisan.
 Para acceder a todos los metodos de un controlador desde un route se utiliza la siguiente sintaxis
@@ -549,3 +549,22 @@ En esa misma carpeta Autho se hace la redireccion de diferentes casos de uso
 VUE
 Framework de javascript
 en el root de nuestra aplicacion hay un package.json
+Todo lo relacionado con las dependencias de nuestra app esta en package.json
+Vamos a utilizar npm para las dependencias(para ello debemos instalar node)
+luego en la consola ubicados en el root de nuestro proyecto
+npm install//instala todas las dependencias de javascript
+
+Components en Vue
+Los componentes estan ubicados en 
+/resources/js/components/
+
+partes de un componente en vue
+1. template
+2. script
+3. style
+
+¿Como incorporar vue dentro de laravel?
+-creamos otra ruta restfull
+Route::resource('pokemons','PokemonController');
+-creamos el controlador respectivo
+php artisan make:controller PokemonController
