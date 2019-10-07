@@ -1,9 +1,9 @@
-Para usar este proyecto en otra compu primero verificar si no tiene el error
-de los emojis si no primero agregar las lineas correspondientes al appserviceprovider
-descrito abajo luego crear una base de datos laradex_development
-luego en el archivo .env poner lo correspondiente a la bbdd
-y por ultimo
-php artisan migrate
+Para usar este proyecto en otra compu
+Primero verificar si no tiene el error de los emojis si no primero agregar las lineas correspondientes al appserviceprovider
+descrito abajo 
+Segundo crear una base de datos laradex_development
+Tercero en el archivo .env poner lo correspondiente a la bbdd
+Cuarto php artisan migrate
 si al ingresar a la url salta un error de keys entonces
 php artisan key:generate
 
@@ -562,9 +562,64 @@ partes de un componente en vue
 1. template
 2. script
 3. style
-
+<template>
+</template>
+<script>
+</script>
+<style>
+</style>
 ¿Como incorporar vue dentro de laravel?
 -creamos otra ruta restfull
 Route::resource('pokemons','PokemonController');
 -creamos el controlador respectivo
 php artisan make:controller PokemonController
+
+1.Requerir vue
+2.Crear componente
+3.registrar el nuevo componente en el app.js
+dicho app.js se encuentra en resources/js/app.js
+Vue.component(
+                'nombre_componente',
+                require('ruta_del_comp.').default);
+¿Como incorporar vue en laravel?
+1.instalar las dependencias con npm install
+2.Crear ruta
+3.Crear controlador
+4.Retornar vista 
+5.Crer vista en Resources/views (crear carpeta si se quiere)
+6.Extender de nuestra layout
+Nota: laravel al instalar las dependencias de npm
+nos provee de un componente de ejemplo que se encuentra en resources/js/components/ExampleComponent.vue
+7. en la vista agregamos 
+<example-component></example-component>
+Opcional: npm run dev para compilar javascript
+Opcional: npm run watch para recompilar todas las modificaciones que se han hecho es parecido al nodemon
+
+
+PARA SPINNERS
+https://projects.lukehaas.me/css-loaders/
+
+Consumos de api's o microservicios con Axios
+Axios un cliente http basado en promises
+dentro de la parte de script del componente podemos colocar la 
+funcion mounted(){} y hacer la peticion con axios
+en la misma parte de script podemos declarar las 
+variables a utilizar en el componente seria algo similar al state en React
+ya en la parte del template podemos llamar a la variables por su nombre sin necesidad de una palabra reservada como this o algo por el estilo.
+
+Programacion en VUE
+Las directivas programaticas de vue siempre llevan
+v-<nombre del comando>
+por ejemplo
+v-for="pokemon in pokemons"
+v-show="loading"
+dichas directivas se pueden utilizar directamente
+en las etiquetas html de los componentes 
+como si de atributos se tratara
+
+
+php artisan make:model Pokemon -m
+Crea el modelo y hace la migracion correspondiente
+php artisan migrate
+Ejecuta la migracion
+me quede en el video 44
