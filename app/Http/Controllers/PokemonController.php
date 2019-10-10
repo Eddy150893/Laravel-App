@@ -1,30 +1,28 @@
 <?php
 
 namespace LaraDex\Http\Controllers;
-
+use LaraDex\Pokemon;
 use Illuminate\Http\Request;
 
 class PokemonController extends Controller
 {
     public function index(Request $request){
         if($request->ajax()){
-            return response()->json([
-                ['id'=>1,'name'=>'Pikachu'],
-                ['id'=>2,'name'=>'Squirtle'],
-                ['id'=>3,'name'=>'Charizard']
-            ],200);
+            $pokemons=Pokemon::all();
+            return response()->json($pokemons,200);
         }
     	return view('pokemons.index');
     }
 
     public function store(Request $request){
-        if($reques->ajax()){
+        if($request->ajax()){
             $pokemon=new Pokemon();
-            $pokemon->name=$reques->input('name');
-            $pokemon->picture=$reques->input('picture');
+            $pokemon->name=$request->input('name');
+            $pokemon->picture=$request->input('picture');
             $pokemon->save();
             return response()->json([
-                "message"=>"Pokemon se creo correctamente"
+                "message"=>"Pokemon se creo correctamente",
+                "pokemon"=>$pokemon
             ],200);
         }
     }

@@ -400,7 +400,7 @@ de la siguiente manera
   @endforeach
 </div>
 @endif
-
+Requestss
 La validacion anterior se llevo acabo en el controlador 
 pero para tener mejor estructurado nuestro codigo es mejor utilizar form request
 php artisan make:request StoreTrainerRequest//esto crea un request
@@ -606,13 +606,31 @@ funcion mounted(){} y hacer la peticion con axios
 en la misma parte de script podemos declarar las 
 variables a utilizar en el componente seria algo similar al state en React
 ya en la parte del template podemos llamar a la variables por su nombre sin necesidad de una palabra reservada como this o algo por el estilo.
+Ejemplo con axios
+Los dos primeros parametros son la ruta y lo que mandamos es decir un objeto 
+luego cerramos el modal
+por ultimo manejamos el error
+axios.post('htttp://127.0.0.1:8000/pokemons',{
+          name:this.name,
+          picture:this.picture
+        })
+        .then(function(res){
+          console.log(res)
+          $('addPokemon').modal('hide')
+        })
+        .catch(function(err){
+          console.log(err)
+        });
 
 Programacion en VUE
 Las directivas programaticas de vue siempre llevan
 v-<nombre del comando>
 por ejemplo
-v-for="pokemon in pokemons"
-v-show="loading"
+v-for="pokemon in pokemons" //ciclo for
+v-show="loading"//visibilidad de un componente
+v-model="name" //binding de una etiqueta
+@submit.prevent="savePokemon"//previene el enviado en una etiqueta form es decir tiene que ir como atributo de form y savePokemmon seria un metodo 
+dentro de la parte de script
 dichas directivas se pueden utilizar directamente
 en las etiquetas html de los componentes 
 como si de atributos se tratara
@@ -622,4 +640,114 @@ php artisan make:model Pokemon -m
 Crea el modelo y hace la migracion correspondiente
 php artisan migrate
 Ejecuta la migracion
-me quede en el video 44
+
+Partes de un script en vue
+ data(){
+      return{
+        name:null,
+        picture:null
+        }
+    },
+    methods:{
+      savePokemon:function(){
+        console.log(this.name),
+        console.log(this.picture)
+      }
+    }
+donde data vendria hacer el estado y methods las
+funciones que manejaran dicho estado es importante recalcar que tambien existe los metodos como mounted
+
+Event bus
+Permite emitir eventos desde un componente y estos pueden ser escuchados desde otros componentes.
+
+Creamos un archivo en la carpeta js en la raiz de js
+y requerimos a vue este sera nuevo event-bus.js
+
+window.Vue=require('vue')
+const bus = new Vue();
+
+export default bus
+
+EMISOR
+Luego donde queremos emitir el event bus lo importamos
+
+import EventBus from '../event-bus';
+y ya importado podemos emitir un evento por medio de emit que recibe dos parametros el nombre del evento 
+y la data de ser necesario
+
+EventBus.$emit('pokemon-added',res.data.pokemon)
+
+REceptor
+Luego donde queremos recibir el event bus lo importamos
+
+import EventBus from '../event-bus';
+
+ya importado utilizamos el metodo on para estar a la escucha y ya que emitimos el evento y mandamos un res
+podemos recibirlo y meterselo a un array
+
+created(){
+            EventBus.$on('pokemon-added',data=>{
+                this.pokemons.push(data)
+            })
+        }
+Nota: created es otro metodo de los componentes como lo es mounted ... y asi sucesivamente
+
+Por que vue?
+
+Remover vue de nuestro proyecto
+php artisan preset none
+
+Utilizar React
+php artisan preset react
+
+Relacion uno a muchos en Eloquent
+Si una relacion es de muchos a muchos eloquent asigna
+un snake_case como foreign key es decir
+si un post tiene uno o mas comentarios 
+eloquent asumira que el foreign key de los comentarios sera post_id
+
+1. Creamos una migracion para agregar la llave foranea
+
+php artisan make:migration add_trainer_id_to_pokemon_table
+
+2. ya en el archivo generado por la migracion
+en el levantado (up) creacmo la llave foranea 
+y en el bajado(down) la removemos
+
+public function up()
+    {
+        Schema::table('pokemon', function (Blueprint $table) {
+            $table->integer('trainer_id')->unsigned();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+         Schema::table('pokemon', function (Blueprint $table) {
+            $table->integer('trainer_id');
+        });
+    }
+
+3. ejecutamos la migracion con 
+php artisan migrate
+
+4. ya en el modelo padre creamos la funcion que nos
+devolvera los hijos, en este ejemplo el entrenador pokemon tendra uno o mas pokemons
+
+public function pokemons(){
+    return $this->hasMany('LaraDex\Pokemon');
+  }
+
+5. Ya en el modelo hijo creamos la funcion que nos devolvera el padre, en este ejemplo un pokemon solo 
+puede pertenecer a un trainer.
+
+public function trainer(){
+        return $this->belongsTo('LaraDex\Trainer');
+    }
+
+Me quede en el video 49

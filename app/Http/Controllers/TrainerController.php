@@ -54,7 +54,7 @@ class TrainerController extends Controller
         $trainer=new Trainer();
         $trainer->name=$request->input('name');
         $trainer->description=$request->input('description');
-        $trainer->avatar=$name;
+        $trainer->avatar=$name;//nombre imagen
         $trainer->slug = time().Str_slug($trainer->name);//para que guarde automaticamente el slug
         $trainer->save();
         return redirect()->route('trainers.index')->with('status','Entrenador creado correctamente');
