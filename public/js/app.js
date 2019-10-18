@@ -1735,7 +1735,8 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     savePokemon: function savePokemon() {
-      axios.post('http://127.0.0.1:8000/pokemons', {
+      var currentRoute = window.location.pathname;
+      axios.post("http://127.0.0.1:8000".concat(currentRoute, "/pokemons"), {
         name: this.name,
         picture: 'images/' + this.picture
       }).then(function (res) {
@@ -1797,7 +1798,8 @@ __webpack_require__.r(__webpack_exports__);
   mounted: function mounted() {
     var _this2 = this;
 
-    axios.get('http://127.0.0.1:8000/pokemons').then(function (res) {
+    var currentRoute = window.location.pathname;
+    axios.get("http://127.0.0.1:8000".concat(currentRoute, "/pokemons")).then(function (res) {
       _this2.pokemons = res.data;
       _this2.loading = false;
     });
@@ -38006,7 +38008,7 @@ var render = function() {
                   "background-color": "#EFEFEF",
                   margin: "20px"
                 },
-                attrs: { src: pokemon.picture }
+                attrs: { src: "../" + pokemon.picture }
               }),
               _vm._v(" "),
               _c("div", { staticClass: "card-body" }, [

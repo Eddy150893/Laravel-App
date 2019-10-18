@@ -26,7 +26,9 @@ Route::get('/name/{name}/lastname/{lastname?}',function($name,$lastname = 'apell
 Route::get('prueba/{name}','PruebaController@prueba');
 
 Route::resource('trainers','TrainerController');
-Route::resource('pokemons','PokemonController');
+//Route::resource('pokemons','PokemonController');
+Route::get('trainers/{trainer}/pokemons','PokemonController@index');
+Route::post('trainers/{trainer}/pokemons','PokemonController@store');
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');

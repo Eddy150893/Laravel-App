@@ -750,4 +750,40 @@ public function trainer(){
         return $this->belongsTo('LaraDex\Trainer');
     }
 
-Me quede en el video 49
+Componentes en blade
+Los componentes creados en view se pueden usar directamente en las view.blade
+
+Para obtener el actual path en view se utiliza 
+let currenRoute = window.location.pathname
+
+Como ya se habian asociado los modelos como en la descripcion anterior podemos 
+asociar un pokemon a un trainer por medio de la siguiente funcion
+a sabiendas que estamos utilizando implicit binding con slug
+es decir le estamos pasando el slug(el id si no lo utilizaramos) al controller pokemon cuando llamamos a la siguiente funcion 
+public function store(Trainer $trainer,Request $request){
+        if($request->ajax()){
+            $pokemon=new Pokemon();
+            $pokemon->name=$request->input('name');
+            $pokemon->picture=$request->input('picture');
+            $pokemon->trainer()->associate($trainer)->save();
+            $pokemon->save();
+            return response()->json([
+                // "trainer"=>$trainer,
+                "message"=>"Pokemon se creo correctamente",
+                "pokemon"=>$pokemon
+            ],200);
+        }
+    }
+ya que con el ORM Elocuent podemos acceder a metodos como associate y save
+associate lo podemos utilizar por que asociamos los modelos en la descripcion anterior
+
+Para listar los pokemons que pertenecen a un entrenados 
+utilizamos a sabiendas que estamos utilizando implicit binding con slug
+es decir le estamos pasando el slug(el id si no lo utilizaramos) al controller pokemon cuando llamamos a la siguiente funcion 
+public function index(Trainer $trainer,Request $request){
+        if($request->ajax()){
+            $pokemons=$trainer->pokemons;
+            return response()->json($pokemons,200);  
+        }
+    	return view('pokemons.index');
+    }

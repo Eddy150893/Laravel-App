@@ -3,7 +3,7 @@
     <spinner v-show="loading"></spinner>
         <div class="col-sm" v-for="pokemon in pokemons">
             <div class="card text-center" style="width: 18rem; margin-top: 70px;">
-                <img style="height: 100px; width: 100px; background-color: #EFEFEF; margin: 20px;" class="card-img-top rounded-circle mx-auto d-block" v-bind:src="pokemon.picture">
+                <img style="height: 100px; width: 100px; background-color: #EFEFEF; margin: 20px;" class="card-img-top rounded-circle mx-auto d-block" v-bind:src="'../'+pokemon.picture">
                 <div class="card-body">
                     <h5 class="card-title">{{pokemon.name}}</h5>
                         <p class="card-text">Some quick example text to build on the card title</p>
@@ -30,8 +30,9 @@ import EventBus from '../../event-bus';
             })
         },
          mounted() {
+             let currentRoute = window.location.pathname
            axios
-                .get('http://127.0.0.1:8000/pokemons')
+                .get(`http://127.0.0.1:8000${currentRoute}/pokemons`)
                 .then((res)=>{
                     this.pokemons=res.data
                     this.loading=false
